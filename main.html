@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>To Do List</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <!-- <script src="./main.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.13/vue.min.js"></script>
+    <script src="https://unpkg.com/semantic-ui-vue/dist/umd/semantic-ui-vue.min.js"></script>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.0/semantic.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Amatic+SC:400,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
+</head>
+<style>
+body {
+    /* font-family: 'Amatic SC', cursive; */
+    font-family: 'Montserrat', sans-serif;
+    overflow: hidden;
+    height: 100%;
+}
+.header {
+    top: 0;
+    height: 10%;
+    text-align: center;
+    padding: 2%;
+}
+.footer {
+    bottom: 0;
+    left: 0;
+    right: 0;
+    position: absolute;
+    text-align: center;
+}
+.container {
+    justify-content: center;
+    position: flex;
+    text-align: center;
+    vertical-align: center;
+    margin: auto;
+    left: 0;
+    right: 0;
+    width: 300px;
+}
+
+.toDoList {
+    text-align: left;
+    justify-content: center;
+}
+.crossLine {
+    text-decoration: line-through;
+}
+label {
+    display: inline-block;
+    width: 250px;
+    text-align: left;
+    /* change line automatically */
+    word-wrap:break-word;
+}
+.closeBtn {
+    text-align: right;
+}
+</style>
+
+<body>
+    <div class="header">
+        <h3>To Do List</h3>
+    </div>
+    <div id="app-1" class="container">
+        <div class="ui action input">
+            <!-- only call `vm.addToDo()` when the `key` is `Enter` -->
+            <input type="text" placeholder="Add To Do Task..." v-model="task" v-on:keyup.enter="addToDo">
+            <button class="ui teal icon button" v-on:click="addToDo"><i class="plus icon"></i></button>
+        </div>
+        <br>
+        <br>
+        <p>{{ date }}</p>
+        <p>{{ time }}</p>
+        <div class="ui buttons">
+            <button class="ui button" :class="{'active': activate == 1}" @click="displayTasks('active', 1)">Active</button>
+            <button class="ui button" :class="{'active': activate == 2}" @click="displayTasks('completed', 2)">Completed</button>
+            <button class="ui button" :class="{'active': activate == 3}" @click="displayTasks('all', 3)">All</button>
+        </div>
+        <br>
+        <br>
+        <div class="toDoList">
+            <sui-table collasping>
+                <sui-table-body>
+                    <div class="ui list">
+                        <li v-for="task in displayList">
+                            <sui-table-row>
+                                <sui-table-cell>
+                                    <div class="ui checkbox">
+                                        <input v-model="task.completed" type="checkbox" @click="changeTaskStatus(task)">
+                                        <label :for="task" :class="{crossLine: isCompleted(task)}">{{ task.name }}</label>
+                                    </div>
+                                    <i class="close icon closeBtn" v-on:click="deleteTask(task)"></i>
+                                </sui-table-cell>
+                            </sui-table-row>
+                        </li>
+                    </div>
+                </sui-table-body>
+            </sui-table>
+        </div>
+    </div>
+    <div class="footer">
+        <p><strong>@Irene Li</strong></p>
+    </div>
+</body>
+<script>
+    var week = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+    // Necessary to import
+    Vue.use(SemanticUIVue);
+    var app1 = new Vue({
+        el: '#app-1',
+        data: {
+            task: '',
+            date: '',
+            time: '',
+            refresh: false,
+            activate: 3,
+            showTasks: 'all',
+            taskList: [
+                {
+                    name: 'Add To Do Task',
+                    completed: false,
+                }
+            ]
+        },
+        methods: {
+            displayTasks: function (state, index) {
+                this.showTasks = state;
+                this.activate = index;
+                console.log(index);
+            },
+            addToDo: function () {
+                // store in to do list
+                if (this.task != '') {
+                    this.taskList.push({
+                        name: this.task,
+                        completed: false,
+                    });
+                }
+                // clear the input buffer
+                this.task = "";
+            },
+            changeTaskStatus: function (task) {
+                task.completed = !task.completed;
+            },
+            isCompleted: function (task) {
+                return task.completed;
+            },
+            deleteTask: function (task) {
+                var index = this.taskList.indexOf(task);
+                if (index > -1) {
+                    this.taskList.splice(index, 1);
+                }
+            },
+            updateClock: function () {
+                let now = new Date();
+                this.date = this.zeroPadding(now.getFullYear(), 4) + '-' + this.zeroPadding(now.getMonth() + 1, 2) + '-'
+                    + this.zeroPadding(now.getDate(), 2) + ' ' + week[now.getDay()];
+                this.time = this.zeroPadding(now.getHours(), 2) + ':' + this.zeroPadding(now.getMinutes(), 2) + ':' + this.zeroPadding(now.getSeconds(), 2);
+                // Clear the to do list of last day when enter an new day
+                if (now.getHours() == 0 && now.getMinutes() == 0 && now.getSeconds() == 0) {
+                    this.taskList = [{ name: 'Add To Do Task', completed: false }];
+                }
+            },
+            zeroPadding: function (num, digit) {
+                var zero = '';
+                for (var i = 0; i < digit; i++) {
+                    zero += '0';
+                }
+                return (zero + num).slice(-digit);
+            }
+        },
+        computed: {
+            displayList: function () {
+                if (this.showTasks == 'all') {
+                    return this.taskList;
+                } else if (this.showTasks == 'completed') {
+                    return this.taskList.filter(function (task) {
+                        return task.completed;
+                    });
+                } else {
+                    return this.taskList.filter(function (task) {
+                        return !task.completed;
+                    });
+                }
+            }
+        },
+        mounted: function () {
+            setInterval(this.updateClock, 100);
+            setInterval()
+        }
+    })
+
+
+</script>
