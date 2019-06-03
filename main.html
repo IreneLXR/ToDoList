@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -14,56 +15,8 @@
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.0/semantic.min.css">
     <link href="https://fonts.googleapis.com/css?family=Amatic+SC:400,700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="style.css">
 </head>
-<style>
-body {
-    /* font-family: 'Amatic SC', cursive; */
-    font-family: 'Montserrat', sans-serif;
-    overflow: hidden;
-    height: 100%;
-}
-.header {
-    top: 0;
-    height: 10%;
-    text-align: center;
-    padding: 2%;
-}
-.footer {
-    bottom: 0;
-    left: 0;
-    right: 0;
-    position: absolute;
-    text-align: center;
-}
-.container {
-    justify-content: center;
-    position: flex;
-    text-align: center;
-    vertical-align: center;
-    margin: auto;
-    left: 0;
-    right: 0;
-    width: 300px;
-}
-
-.toDoList {
-    text-align: left;
-    justify-content: center;
-}
-.crossLine {
-    text-decoration: line-through;
-}
-label {
-    display: inline-block;
-    width: 250px;
-    text-align: left;
-    /* change line automatically */
-    word-wrap:break-word;
-}
-.closeBtn {
-    text-align: right;
-}
-</style>
 
 <body>
     <div class="header">
@@ -90,6 +43,12 @@ label {
             <sui-table collasping>
                 <sui-table-body>
                     <div class="ui list">
+                        <todo-task-item v-for="task in displayList"
+                                   v-bind:task="task"
+                                   v-bind:key="task"
+                                   @remove="deleteTask(task)"
+                        ></todo-task-item>
+                        <!--
                         <li v-for="task in displayList">
                             <sui-table-row>
                                 <sui-table-cell>
@@ -101,6 +60,7 @@ label {
                                 </sui-table-cell>
                             </sui-table-row>
                         </li>
+                    -->
                     </div>
                 </sui-table-body>
             </sui-table>
@@ -147,12 +107,6 @@ label {
                 // clear the input buffer
                 this.task = "";
             },
-            changeTaskStatus: function (task) {
-                task.completed = !task.completed;
-            },
-            isCompleted: function (task) {
-                return task.completed;
-            },
             deleteTask: function (task) {
                 var index = this.taskList.indexOf(task);
                 if (index > -1) {
@@ -196,8 +150,34 @@ label {
             setInterval(this.updateClock, 100);
             setInterval()
         }
+    });
+    Vue.component('todo-task-item', {
+        props: ['task'],
+        template: `
+            <li>
+                <sui-table-row>
+                    <sui-table-cell>
+                        <div class="ui checkbox">
+                            <input v-model="task.completed" type="checkbox" @click="changeTaskStatus(task)">
+                            <label :for="task" :class="{crossLine: isCompleted(task)}">{{ task.name }}</label>
+                        </div>
+                        <i class="close icon closeBtn"  @click="$emit('remove')"></i>
+                    </sui-table-cell>
+                </sui-table-row>
+            </li>
+        `,
+        methods: {
+            changeTaskStatus: function (task) {
+                console.log(task.name);
+                task.completed = !task.completed;
+            },
+            isCompleted: function (task) {
+                return task.completed;
+            }
+        },
     })
 
 
 </script>
+
 </html>

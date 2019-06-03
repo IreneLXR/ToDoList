@@ -1,0 +1,47 @@
+body {
+    /* font-family: 'Amatic SC', cursive; */
+    font-family: 'Montserrat', sans-serif;
+    overflow: hidden;
+    height: 100%;
+}
+.header {
+    top: 0;
+    height: 10%;
+    text-align: center;
+    padding: 2%;
+}
+.footer {
+    bottom: 0;
+    left: 0;
+    right: 0;
+    position: absolute;
+    text-align: center;
+}
+.container {
+    justify-content: center;
+    position: flex;
+    text-align: center;
+    vertical-align: center;
+    margin: auto;
+    left: 0;
+    right: 0;
+    width: 300px;
+}
+
+.toDoList {
+    text-align: left;
+    justify-content: center;
+}
+.crossLine {
+    text-decoration: line-through;
+}
+label {
+    display: inline-block;
+    width: 250px;
+    text-align: left;
+    /* change line automatically */
+    word-wrap:break-word;
+}
+.closeBtn {
+    text-align: right;
+}
